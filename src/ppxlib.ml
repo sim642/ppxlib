@@ -63,7 +63,11 @@ module Longident = Longident
 module Merlin_helpers = Merlin_helpers
 module Reserved_namespaces = Name.Reserved_namespaces
 module Spellcheck = Spellcheck
-module Quoter = Quoter
+
+module Quoter = Expansion_helpers.Quoter
+(** This alias is kept for backward compatibility, access the module directly
+    with {!Expansion_helpers.Quoter}. *)
+
 module Ast_io = Utils.Ast_io.Read_bin
 
 include Common
