@@ -12,7 +12,22 @@ let sanitize t e =
   | [] -> e
   | bindings ->
       let (module Ast) = Ast_builder.make e.pexp_loc in
-      Ast.pexp_let Nonrecursive bindings e
+      match e with
+      | { pexp_desc = Pexp_function (params, constraints, Pfunction_body body); _} ->
+        Ast.pexp_function params constraints (Pfunction_body (Ast.pexp_let Nonrecursive bindings body))
+      | { pexp_desc = Pexp_function (params, constraints, Pfunction_cases (cases, _, _)); _} ->
+        let p = Ast.pvar "__arg" in
+        let params' =
+          [
+            {
+              pparam_desc = Pparam_val (Nolabel, None, p);
+              pparam_loc = Location.none;
+            };
+          ]
+        in
+        Ast.pexp_function (params @ params') constraints (Pfunction_body (Ast.pexp_let Nonrecursive bindings (Ast.pexp_match (Ast.evar "__arg") cases)))
+      | _ ->
+        Ast.pexp_let Nonrecursive bindings e
 
 let quote t (e : expression) =
   let loc = e.pexp_loc in

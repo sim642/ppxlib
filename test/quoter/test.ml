@@ -6,6 +6,10 @@ module Ast = Ast_builder.Default
 module Ast = Ppxlib.Ast_builder.Default
 |}]
 
+
+let loc = Location.none
+[%%ignore]
+
 let quoter = Quoter.create ();;
 [%%expect{|
 val quoter : Quoter.t = <abstr>
@@ -50,4 +54,26 @@ Pprintast.string_of_expression quoted;;
 [%%expect{|
 - : string =
 "let __2 () = foo ()\nand __1 = bar\nand __0 = foo in [__0; __1; __2 ()]"
+|}]
+
+let quoted2 =
+  let expr = [%expr fun x -> x] in
+  Quoter.sanitize quoter expr
+[%%ignore]
+
+Pprintast.string_of_expression quoted2;;
+[%%expect{|
+- : string =
+"fun x -> let __2 () = foo ()\n         and __1 = bar\n         and __0 = foo in x"
+|}]
+
+let quoted3 =
+  let expr = [%expr function _ -> [%e expr1]] in
+  Quoter.sanitize quoter expr
+[%%ignore]
+
+Pprintast.string_of_expression quoted3;;
+[%%expect{|
+- : string =
+"fun __arg ->\n  let __2 () = foo ()\n  and __1 = bar\n  and __0 = foo in match __arg with | _ -> __0"
 |}]
