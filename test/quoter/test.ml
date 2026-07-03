@@ -41,13 +41,23 @@ Pprintast.string_of_expression expr3;;
 - : string = "__2 ()"
 |}]
 
+let expr4 =
+  Ast.eabstract ~loc:Location.none [Ast.pvar "x" ~loc:Location.none] (Ast.evar "x" ~loc:Location.none)
+  |> Quoter.quote quoter
+[%%ignore]
+
+Pprintast.string_of_expression expr4;;
+[%%expect{|
+- : string = "__3 ()"
+|}]
+
 let quoted =
-  let expr = Ast.elist ~loc:Location.none [expr1; expr2; expr3] in
+  let expr = Ast.elist ~loc:Location.none [expr1; expr2; expr3; expr4] in
   Quoter.sanitize quoter expr
 [%%ignore]
 
 Pprintast.string_of_expression quoted;;
 [%%expect{|
 - : string =
-"let __2 () = foo ()\nand __1 = bar\nand __0 = foo in [__0; __1; __2 ()]"
+"let __3 () = fun x -> x\nand __2 () = foo ()\nand __1 = bar\nand __0 = foo in [__0; __1; __2 (); __3 ()]"
 |}]
