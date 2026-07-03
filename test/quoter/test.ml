@@ -48,7 +48,7 @@ let expr4 =
 
 Pprintast.string_of_expression expr4;;
 [%%expect{|
-- : string = "__3 ()"
+- : string = "__3"
 |}]
 
 let quoted =
@@ -59,5 +59,5 @@ let quoted =
 Pprintast.string_of_expression quoted;;
 [%%expect{|
 - : string =
-"let __3 () = fun x -> x\nand __2 () = foo ()\nand __1 = bar\nand __0 = foo in [__0; __1; __2 (); __3 ()]"
+"let __3 x = x\nand __2 () = foo ()\nand __1 = bar\nand __0 = foo in [__0; __1; __2 (); __3]"
 |}]

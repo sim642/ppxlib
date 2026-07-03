@@ -20,9 +20,9 @@ let quote t (e : expression) =
   let name = "__" ^ Int.to_string t.next_id in
   let binding_expr, quoted_expr =
     match e with
-    (* Optimize identifier quoting by avoiding closure.
+    (* Optimize quoting by avoiding closure.
        See https://github.com/ocaml-ppx/ppx_deriving/pull/252. *)
-    | { pexp_desc = Pexp_ident _; _ } -> (e, Ast.evar name)
+    | { pexp_desc = Pexp_ident _ | Pexp_function _; _ } -> (e, Ast.evar name)
     | _ ->
         let p =
           let unit = Ast_builder.Default.Located.lident ~loc "()" in
